@@ -1,7 +1,7 @@
 <template>
 	<aside :class="`${is_expanded ? 'is-expanded' : ''}`">
 		<div class="logo">
-			<img :src="logoURL" alt="Vue" /> 
+			<img :src="logo" alt="flashr" /> 
 		</div>
 
 		<div class="menu-toggle-wrap">
@@ -16,34 +16,36 @@
 				<span class="material-icons">home</span>
 				<span class="text">Home</span>
 			</router-link>
-			<router-link to="/about" class="button">
-				<span class="material-icons">description</span>
-				<span class="text">About</span>
-			</router-link>
-			<router-link to="/team" class="button">
-				<span class="material-icons">group</span>
-				<span class="text">Team</span>
-			</router-link>
-			<router-link to="/contact" class="button">
-				<span class="material-icons">email</span>
-				<span class="text">Contact</span>
+			<router-link to="/insights" class="button">
+				<span class="material-icons">show_chart</span>
+				<span class="text">Insights</span>
 			</router-link>
 		</div>
 
 		<div class="flex"></div>
 		
 		<div class="menu">
+			<router-link to="/profile" class="button">
+				<span class="material-icons">person</span>
+				<span class="text">Profile</span>
+			</router-link>
 			<router-link to="/settings" class="button">
 				<span class="material-icons">settings</span>
 				<span class="text">Settings</span>
 			</router-link>
+			<div class="button" style="cursor: pointer;" v-on:click="signOut">
+				<span class="material-icons">logout</span>
+				<span class="text" style="user-select: none;">Logout</span>
+			</div>
 		</div>
 	</aside>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import logoURL from '../assets/logo.png'
+import logo from '../assets/logo.png'
+import {supabase} from '../supabase'
+import { useRouter } from 'vue-router';
 
 const is_expanded = ref(localStorage.getItem("is_expanded") === "true")
 
@@ -51,6 +53,13 @@ const ToggleMenu = () => {
 	is_expanded.value = !is_expanded.value
 	localStorage.setItem("is_expanded", is_expanded.value)
 }
+
+
+async function signOut() {
+const { error } = await supabase.auth.signOut()
+}
+
+
 </script>
 
 <style lang="scss" scoped>
@@ -73,7 +82,7 @@ aside {
 	}
 
 	.logo {
-		margin-bottom: 1rem;
+		margin-bottom: .5rem;
 
 		img {
 			width: 2rem;
@@ -125,6 +134,7 @@ aside {
 			display: flex;
 			align-items: center;
 			text-decoration: none;
+			background-color: var(--dark);
 
 			transition: 0.2s ease-in-out;
 			padding: 0.5rem 1rem;
