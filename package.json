@@ -9,8 +9,10 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.41.1",
+    "chart.js": "^4.4.2",
     "vue": "^3.2.25",
-    "vue-router": "^4.0.12"
+    "vue-router": "^4.0.12",
+    "vuetify": "^3.5.13"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.2.0",

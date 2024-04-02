@@ -1,11 +1,15 @@
 <template>
-	<div class="app" v-if="session" :session="session">
-		<!-- Sidebar -->
-		<Sidebar />
 
-		<!-- Content -->
-		<router-view />
+	<div v-if="session" :session="session">
+		<div class="app" >
+			<!-- Sidebar -->
+			<Sidebar class="sidebar"/>
+
+			<!-- Content -->
+			<router-view/>
+		</div>
 	</div>
+	
 	<div v-else>
 		<Auth/>
 	</div>
