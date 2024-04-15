@@ -1,5 +1,7 @@
 <template>
 	<main class="insights-page">
+		<h1>Insights</h1>
+
 		<v-app  style="background-color: var(--light);">
 			<v-container fluid class="my-10">
 				<v-row>
@@ -86,7 +88,8 @@ export default{
 					beginAtZero: true
 				}
 				}
-			}
+			},
+			metricsData: null,
 		}
 	},
 	methods: {
@@ -97,8 +100,8 @@ export default{
     closeModal() {
       this.selectedItemId = null;
       this.modal = false;
-    }
-  }
+    },
+  },
 }
 
 </script>
