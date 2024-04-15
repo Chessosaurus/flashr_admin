@@ -2,7 +2,7 @@
 	<main class="home-page">
 		<h1>Home</h1>
 
-		<v-app>
+		<v-app style="background-color: var(--light);">
 			<v-container fluid class="my-10">
 				<v-row>
 					<v-col v-for="(item, index) in team" :key="index" cols="12" sm="6" md="4" lg="6">
@@ -55,6 +55,10 @@
 	.modal-btn {
 		background-color: var(--grey-alt);
 	}
+	.cards{
+		color: black;
+	}
+	
 </style>
 
 
