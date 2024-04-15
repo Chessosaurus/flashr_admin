@@ -1,5 +1,5 @@
 <template>
-	<main>
+	<main class="home-page">
 		<h1>Home</h1>
 
 		<v-app>
@@ -8,10 +8,10 @@
 					<v-col v-for="(item, index) in team" :key="index" cols="12" sm="6" md="4" lg="6">
 						<v-hover>
 							<template v-slot:default="{ isHovering, props }">
-								<v-card v-bind="props" @click="openModal(index)" :color="isHovering ? 'var(--primary)' : undefined" :class="isHovering ? 'scale-out': undefined">
+								<v-card v-bind="props" @click="openModal(index)" :color="isHovering ? 'var(--light)' : undefined" :class="isHovering ? 'scale-out': undefined">
 								<v-card-title>{{ item.name }}</v-card-title>
 								<v-card-text>						<chart-component :chart-data="chartData" :chart-options="chartOptions"></chart-component>
-</v-card-text>
+								</v-card-text>
 								<v-card-text>{{ item.role }}</v-card-text>
 								</v-card>
 							</template>
@@ -39,6 +39,11 @@
 
 
 <style>
+	.home-page{
+  		height: 100vh; 
+  		overflow-y: auto; 
+	}		
+
 	.scale-out {
 	transition: transform 0.01s;
 	}
