@@ -2,7 +2,7 @@
     <div>
       <canvas ref="chartCanvas"></canvas>
     </div>
-  </template>
+</template>
   
   <script>
   import Chart from 'chart.js/auto';
@@ -14,8 +14,12 @@
         required: true
       },
       chartOptions: {
-        type: Object,
-        default: () => ({})
+        responsive: true,
+				scales: {
+				y: {
+					beginAtZero: true
+				}
+				}
       }
     },
     mounted() {

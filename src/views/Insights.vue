@@ -4,25 +4,45 @@
 
 		<v-app  style="background-color: var(--light);">
 			<v-container fluid class="my-10">
+				<h2>Movie</h2>
 				<v-row>
-					<v-col>
+					<v-col v-for="(item, index) in movie" :key="index" cols="12" sm="6" md="4" lg="6">
 						<v-hover>
 							<template v-slot:default="{ isHovering, props }">
-								<v-card v-bind="props" @click="openModal(index)" :color="isHovering ? 'var(--light)' : undefined" :class="isHovering ? 'scale-out': undefined">
-								<v-card-text>{{ favoriteTvCounts }}</v-card-text>
-								<v-card-text>{{ favoriteTvNames }}</v-card-text>
+								<v-card v-bind="props" @click="openMovieModal(index)" :color="isHovering ? 'var(--light)' : undefined" :class="isHovering ? 'scale-out': undefined">
+								<v-card-title>{{ item.name }}</v-card-title>
+								<v-card-text v-if="index===0">						
+									<movieFavChart :chart-options="chartOptions"></movieFavChart>
+								</v-card-text>
+								<v-card-text v-if="index===1">						
+									<movieMostLikeChart :chart-options="chartOptions"></movieMostLikeChart>
+								</v-card-text>
+								<v-card-text v-if="index===2">						
+									<movieMostDislikeChart :chart-options="chartOptions"></movieMostDislikeChart>
+								</v-card-text>
+								<v-card-text>{{ item.role }}</v-card-text>
 								</v-card>
 							</template>
 						</v-hover>
 					</v-col>
 				</v-row>
+
+
+				<h2>TV</h2>
 				<v-row>
-					<v-col v-for="(item, index) in team" :key="index" cols="12" sm="6" md="4" lg="6">
+					<v-col v-for="(item, index) in tv" :key="index" cols="12" sm="6" md="4" lg="6">
 						<v-hover>
 							<template v-slot:default="{ isHovering, props }">
-								<v-card v-bind="props" @click="openModal(index)" :color="isHovering ? 'var(--light)' : undefined" :class="isHovering ? 'scale-out': undefined">
+								<v-card v-bind="props" @click="openTvModal(index)" :color="isHovering ? 'var(--light)' : undefined" :class="isHovering ? 'scale-out': undefined">
 								<v-card-title>{{ item.name }}</v-card-title>
-								<v-card-text>						<chart-component :chart-data="chartData" :chart-options="chartOptions"></chart-component>
+								<v-card-text v-if="index===0">						
+									<tv-fav-chart :chart-options="chartOptions"></tv-fav-chart>
+								</v-card-text>
+								<v-card-text v-if="index===1">						
+									<tvMostLikeChart :chart-options="chartOptions"></tvMostLikeChart>
+								</v-card-text>
+								<v-card-text v-if="index===2">						
+									<tvMostDislikeChart :chart-options="chartOptions"></tvMostDislikeChart>
 								</v-card-text>
 								<v-card-text>{{ item.role }}</v-card-text>
 								</v-card>
@@ -32,18 +52,44 @@
 				</v-row>
 			</v-container>
 
-			<v-dialog v-model="modal" max-width="500px">
+
+
+			<v-dialog v-model="tvModal" max-width="500px">
 				<v-card>
-					<v-card-title v-if="selectedItemId !== null">{{  team[selectedItemId].name  }}</v-card-title>
-					<v-card-text>
-						<chart-component :chart-data="chartData" :chart-options="chartOptions"></chart-component>
-					</v-card-text>
+					<v-card-title v-if="selectedItemId !== null">{{  tv[selectedItemId].name  }}</v-card-title>
+						<v-card-text v-if="selectedItemId===0">						
+							<tv-fav-chart :chart-options="chartOptions"></tv-fav-chart>
+						</v-card-text>
+						<v-card-text v-if="selectedItemId===1">						
+							<tvMostLikeChart :chart-options="chartOptions"></tvMostLikeChart>
+						</v-card-text>
+						<v-card-text v-if="selectedItemId===2">						
+							<tvMostDislikeChart :chart-options="chartOptions"></tvMostDislikeChart>
+						</v-card-text>
 					<v-card-actions>
-						<v-btn class="modal-btn" @click="closeModal">Close</v-btn>
+						<v-btn class="modal-btn" @click="closeTvModal">Close</v-btn>
 					</v-card-actions>
 				</v-card>
 			</v-dialog>
 			
+			<v-dialog v-model="movieModal" max-width="500px">
+				<v-card>
+					<v-card-title v-if="selectedItemId !== null">{{  movie[selectedItemId].name  }}</v-card-title>
+						<v-card-text v-if="selectedItemId===0">						
+							<movieFavChart :chart-options="chartOptions"></movieFavChart>
+						</v-card-text>
+						<v-card-text v-if="selectedItemId===1">						
+							<movieMostLikeChart :chart-options="chartOptions"></movieMostLikeChart>
+						</v-card-text>
+						<v-card-text v-if="selectedItemId===2">						
+							<movieMostDislikeChart :chart-options="chartOptions"></movieMostDislikeChart>
+						</v-card-text>
+					<v-card-actions>
+						<v-btn class="modal-btn" @click="closeMovieModal">Close</v-btn>
+					</v-card-actions>
+				</v-card>
+			</v-dialog>
+
 		</v-app>
 	</main>
 </template>
@@ -68,34 +114,44 @@
 </style>
 
 <script>
-
-import ChartComponent from '../components/ExampleChart.vue';
-import {get_favorite_tv_ranked} from '../typescript/insights'
-
+import tvFavChart from '../components/TvCharts/favTvChart.vue';
+import tvMostLikeChart from '../components/TvCharts/mostLikedTvChart.vue'
+import tvMostDislikeChart from '../components/TvCharts/MostDislikedTvChart.vue';
+import movieFavChart from '../components/MovieCharts/favMovieChart.vue';
+import movieMostLikeChart from '../components/MovieCharts/mostLikedMovieChart.vue'
+import movieMostDislikeChart from '../components/MovieCharts/MostDislikedMovieChart.vue';
 
 
 
 export default{
+
 	components: {
-    	ChartComponent
+		tvFavChart,
+		tvMostLikeChart,
+		tvMostDislikeChart,
+		movieFavChart,
+		movieMostLikeChart,
+		movieMostDislikeChart
   	},
 	data(){
 		return {
-			team: [
-				{name: 'Movies', role:'Displays how many Database requests have been made.'},
-				{name: 'TV', role:'Displays how many Auth requests have been made.'},
-				{name: 'Actors', role:'Displays how many Storage requests have been made.'},
-				{name: 'Genres', role:'Displays how many Realtime requests have been made.'},
+			dataLoaded: false,
+			tv: [
+				{name: 'Favorites', role:'Displays the overall favorites.'},
+				{name: 'Most liked', role:'Displays the overall most liked tv shows.'},
+				{name: 'Most disliked', role:'Displays the overall most disliked tv shows.'},
 			],
-			modal: false,
+			movie: [
+				{name: 'Favorites', role:'Displays the overall favorites.'},
+				{name: 'Most liked', role:'Displays the overall most liked movies.'},
+				{name: 'Most disliked', role:'Displays the overall most disliked movies.'},
+			],
+
+
+			movieModal:false,
+			tvModal: false,
 			selectedItemId: null,
-			chartData: {
-				labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-				datasets: [{
-				label: 'Sales',
-				data: [65, 59, 80, 81, 56, 55, 40]
-				}]
-			},
+		
 			chartOptions: {
 				responsive: true,
 				scales: {
@@ -104,34 +160,25 @@ export default{
 				}
 				}
 			},
-			favoriteTvNames : [],
-			favoriteTvCounts : []
 		}
 	},
 	methods: {
-    openModal(index) {
+    openTvModal(index) {
       this.selectedItemId = index;
-      this.modal = true;
+      this.tvModal = true;
     },
-    closeModal() {
+    closeTvModal() {
       this.selectedItemId = null;
-      this.modal = false;
+      this.tvModal = false;
     },
-  },
-
-  mounted(){
-	//gets the favorite tv series in ranked order
-	get_favorite_tv_ranked()
-		.then((array) => {
-			array.forEach(element => {
-				const {id, name, count} = element
-				this.favoriteTvNames.push(element.name)
-				this.favoriteTvCounts.push(element.count)
-			});
-		});
-
-	
-	
+	openMovieModal(index) {
+      this.selectedItemId = index;
+      this.movieModal = true;
+    },
+    closeMovieModal() {
+      this.selectedItemId = null;
+      this.movieModal = false;
+    },
   }
 }
 
