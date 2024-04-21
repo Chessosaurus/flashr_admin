@@ -5,6 +5,18 @@
 		<v-app  style="background-color: var(--light);">
 			<v-container fluid class="my-10">
 				<v-row>
+					<v-col>
+						<v-hover>
+							<template v-slot:default="{ isHovering, props }">
+								<v-card v-bind="props" @click="openModal(index)" :color="isHovering ? 'var(--light)' : undefined" :class="isHovering ? 'scale-out': undefined">
+								<v-card-text>{{ favoriteTvCounts }}</v-card-text>
+								<v-card-text>{{ favoriteTvNames }}</v-card-text>
+								</v-card>
+							</template>
+						</v-hover>
+					</v-col>
+				</v-row>
+				<v-row>
 					<v-col v-for="(item, index) in team" :key="index" cols="12" sm="6" md="4" lg="6">
 						<v-hover>
 							<template v-slot:default="{ isHovering, props }">
@@ -58,6 +70,9 @@
 <script>
 
 import ChartComponent from '../components/ExampleChart.vue';
+import {get_favorite_tv_ranked} from '../typescript/insights'
+
+
 
 
 export default{
@@ -89,7 +104,8 @@ export default{
 				}
 				}
 			},
-			metricsData: null,
+			favoriteTvNames : [],
+			favoriteTvCounts : []
 		}
 	},
 	methods: {
@@ -102,6 +118,21 @@ export default{
       this.modal = false;
     },
   },
+
+  mounted(){
+	//gets the favorite tv series in ranked order
+	get_favorite_tv_ranked()
+		.then((array) => {
+			array.forEach(element => {
+				const {id, name, count} = element
+				this.favoriteTvNames.push(element.name)
+				this.favoriteTvCounts.push(element.count)
+			});
+		});
+
+	
+	
+  }
 }
 
 </script>
