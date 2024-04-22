@@ -84,7 +84,7 @@
 						<v-card-text v-if="selectedItemId===2">						
 							<movieMostDislikeChart :chart-options="chartOptions"></movieMostDislikeChart>
 						</v-card-text>
-					<v-card-actions>
+					<v-card-actions class="modal-actions">
 						<v-btn class="modal-btn" @click="closeMovieModal">Close</v-btn>
 					</v-card-actions>
 				</v-card>
@@ -109,8 +109,17 @@
 	}
 
 	.modal-btn {
-		background-color: var(--grey-alt);
+		background-color: #64c4df !important;
+		color:black;
+		border-radius: 4px;
 	}
+	
+	.modal-actions {
+		display: flex;
+		justify-content: flex-end;
+		padding: 16px; 
+	}
+
 </style>
 
 <script>
