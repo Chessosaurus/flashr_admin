@@ -5,3 +5,5 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY
 
 
 export const supabase = createClient(supabaseUrl,supabaseKey, {db: { schema: 'persistence' }});
+
+export const supabase_stats = createClient(supabaseUrl,supabaseKey, {db: { schema: 'stats' }});

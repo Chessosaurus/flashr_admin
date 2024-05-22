@@ -28,38 +28,34 @@
 						</v-card>
 					</v-col>
             	</v-row>
-				<h2>Statistics</h2>
-				<v-row>
-					<v-col v-for="(item, index) in team" :key="index" cols="12" sm="6" md="4" lg="6">
-						<v-hover>
-							<template v-slot:default="{ isHovering, props }">
-								<v-card v-bind="props" @click="openModal(index)" :color="isHovering ? 'var(--light)' : undefined" :class="isHovering ? 'scale-out': undefined">
-								<v-card-title>{{ item.name }}</v-card-title>
-								<v-card-text>						<chart-component :chart-data="chartData" :chart-options="chartOptions"></chart-component>
-								</v-card-text>
-								<v-card-text>{{ item.role }}</v-card-text>
-								</v-card>
-							</template>
-						</v-hover>
-					</v-col>
-				</v-row>
-			</v-container>
+				<h2>User-Map</h2>
+				<div>
+					<div class="control-section">
+						<ejs-maps id='container' :bubbleRendering='bubbleRendering' format='n' :useGroupingSeparator='useGroupingSeparator' :titleSettings='titleSettings' :zoomSettings='zoomSettings'>
+							<e-layers>
+								<e-layer :shapeData='shapeData' :shapePropertyPath='shapePropertyPath' :shapeDataPath='shapeDataPath' :bubbleSettings='bubbleSettings' :shapeSettings='shapeSettings'></e-layer>
+							</e-layers>
+						</ejs-maps>
 
-			<v-dialog v-model="modal" max-width="500px">
-				<v-card>
-					<v-card-title v-if="selectedItemId !== null">{{  team[selectedItemId].name  }}</v-card-title>
-					<v-card-text>
-						<chart-component :chart-data="chartData" :chart-options="chartOptions"></chart-component>
-					</v-card-text>
-					<v-card-actions>
-						<v-btn class="modal-btn" @click="closeModal">Close</v-btn>
-					</v-card-actions>
-				</v-card>
-			</v-dialog>
-			
+						<div id="template" style="display:none">
+							<div class="toolback">
+								<div class="listing2">
+									<span style="text-align: center;">
+										${name}
+									</span>
+								</div>
+								<hr style="margin-top: 2px;margin-bottom:5px;border:0.5px solid #DDDDDD">
+								<div>
+									<span class="listing1">Calls : </span><span class="listing2">${count}</span>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</v-container>			
 		</v-app>
-	</main>
-	
+	</main>	
 </template>
 
 
@@ -120,6 +116,24 @@
 		display: block;
 	}
 
+	.toolback {
+        background: rgba(53, 63, 76, 0.90);
+        padding-bottom: 10px;
+        padding-top: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+        width: 165px;
+    }
+    .listing1 {
+        font-size:13px;
+        color:#cccccc
+    }
+    .listing2 {
+        font-size:13px;
+        color:#ffffff;
+        font-weight: 500;
+    }
+
 	@media (max-width: 800px) {
 		.text-container {
 			flex-direction: column; /* Switch to column layout on smaller screens */
@@ -130,87 +144,104 @@
 
 <script>
 
-import ChartComponent from '../components/ExampleChart.vue';
 import parsePrometheusTextFormat from 'parse-prometheus-text-format';
 import { getUserCount, getDatabaseConnections, getUptimeOfBackend, getUsedStorage, getCpuTime } from '../typescript/processData';
-
+import { MapsComponent, LayersDirective, LayerDirective, Bubble, MapsTooltip, Zoom } from '@syncfusion/ej2-vue-maps';
+import { appUsers } from '../typescript/users-data';
+import { worldMap } from '../typescript/world-map';
+import { calculateBubbleSizes } from '../typescript/users-data';
 
 export default{
 	components: {
-    	ChartComponent
-  	},
+    	'ejs-maps': MapsComponent,
+    	'e-layers': LayersDirective,
+    	'e-layer': LayerDirective
+	},
 	data(){
 		return {
-			team: [
-				{name: 'Database', role:'Displays how many Database requests have been made.'},
-				{name: 'Auth', role:'Displays how many Auth requests have been made.'},
-				{name: 'Storage', role:'Displays how many Storage requests have been made.'},
-				{name: 'Realtime', role:'Displays how many Realtime requests have been made.'},
-				{name: 'Users', role:'Displays how many Users are using the app.'},
-			],
-			modal: false,
-			selectedItemId: null,
-			chartData: {
-				labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-				datasets: [{
-				label: 'Sales',
-				data: [65, 59, 80, 81, 56, 55, 40]
-				}]
-			},
-			chartOptions: {
-				responsive: true,
-				scales: {
-				y: {
-					beginAtZero: true
-				}
-				}
-			},
 			metricsData:JSON,
 			metricsDataArray:null,
 			userCount:null,
 			sqlConnections:null,
 			uptime:null,
 			usedStorage:null,
-			cpuTime:null
+			cpuTime:null,
+
+			useGroupingSeparator: true,
+			zoomSettings: {
+				enable: true,
+				horizontalAlignment: 'Near',
+				toolBarOrientation: 'Vertical',
+				pinchZooming: true
+			},
+			titleSettings: {
+				text: 'Have a look from where the app is used!',
+				textStyle: {
+					size: '16px',
+					fontFamily: 'Segoe UI'
+				}
+			},
+			shapeDataPath: 'name',
+			shapePropertyPath: 'name',
+			shapeData: worldMap,
+			shapeSettings: {
+						fill: '#E5E5E5'
+			},
+			bubbleSettings: [
+				{
+							visible: true,
+							valuePath: 'bubbleSize',
+							colorValuePath: 'color',
+							minRadius: 3,
+							maxRadius: 70,
+							opacity: 0.8,
+							dataSource: appUsers,
+							tooltipSettings: {
+								visible: true,
+								valuePath: 'count',
+								template: '#template'
+							},
+						}
+			]
 		}
 	},
-	methods: {
-    openModal(index) {
-      this.selectedItemId = index;
-      this.modal = true;
-    },
-    closeModal() {
-      this.selectedItemId = null;
-      this.modal = false;
-    }	
-  },
-  mounted() {
-	let headers = new Headers();
-	const username = import.meta.env.VITE_SUPABASE_USER
-	const password = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY
-	const base64Credentials = btoa(`${username}:${password}`);
+	mounted() {
+		calculateBubbleSizes(appUsers);
 
-	headers.append('Authorization', `Basic ${base64Credentials}`);
-	headers.append('Content-Type', 'application/json');
+		let headers = new Headers();
+		const username = import.meta.env.VITE_SUPABASE_USER
+		const password = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY
+		const base64Credentials = btoa(`${username}:${password}`);
 
-	fetch('https://alhcmnttuuzaspxtifhb.supabase.co/customer/v1/privileged/metrics', {
-      method: 'GET',
-	  headers: headers
-    })
-      .then(response => response.text())
-      .then(data => {
-		this.metricsData = parsePrometheusTextFormat(data)
-		this.metricsDataArray = Object.values(this.metricsData)
-		this.userCount = getUserCount(this.metricsDataArray)
-		this.sqlConnections = getDatabaseConnections(this.metricsDataArray)
-		this.uptime = getUptimeOfBackend(this.metricsDataArray)
-		this.usedStorage = getUsedStorage(this.metricsData)
-		this.cpuTime = getCpuTime(this.metricsData)
-	})
-      .catch(error => {
-        console.error('Error fetching metrics:', error);
-      });
-	}
+		headers.append('Authorization', `Basic ${base64Credentials}`);
+		headers.append('Content-Type', 'application/json');
+
+		fetch('https://alhcmnttuuzaspxtifhb.supabase.co/customer/v1/privileged/metrics', {
+		method: 'GET',
+		headers: headers
+		})
+		.then(response => response.text())
+		.then(data => {
+			this.metricsData = parsePrometheusTextFormat(data)
+			this.metricsDataArray = Object.values(this.metricsData)
+			this.userCount = getUserCount(this.metricsDataArray)
+			this.sqlConnections = getDatabaseConnections(this.metricsDataArray)
+			this.uptime = getUptimeOfBackend(this.metricsDataArray)
+			this.usedStorage = getUsedStorage(this.metricsData)
+			this.cpuTime = getCpuTime(this.metricsData)
+		})
+		.catch(error => {
+			console.error('Error fetching metrics:', error);
+		});
+	},
+	methods:{
+		bubbleRendering:function(args){
+    		args.radius = (args.data).bubbleSize;
+		}
+	},
+	provide: {
+    	maps: [Bubble, MapsTooltip, Zoom]
+	},
 }
 
 </script>
