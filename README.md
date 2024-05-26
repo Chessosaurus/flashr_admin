@@ -30,6 +30,7 @@ Führen Sie die folgenden Schritte aus, um das Projekt lokal zu installieren und
     npm install
     ```
 4. Hinzufügen der Environmentvariablen:
+   
      Fügen Sie die von uns erhaltenen Environmentvariablen in den Ordner .env im Hauptverzeichnis des Projektes hinzu.
     
 6. Starten Sie das Projekt:
