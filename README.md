@@ -19,7 +19,7 @@ Führen Sie die folgenden Schritte aus, um das Projekt lokal zu installieren und
 
 1. Klonen Sie das Repository:
     ```sh
-    git clone https://github.com/dein-benutzername/flashr-admin-dashboard.git
+    git clone https://github.com/Chessosaurus/flashr_admin.git
     ```
 2. Wechseln Sie in das Projektverzeichnis:
     ```sh
