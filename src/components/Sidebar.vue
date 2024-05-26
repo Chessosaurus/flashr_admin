@@ -25,14 +25,14 @@
 		<div class="flex"></div>
 		
 		<div class="menu">
-			<router-link to="/profile" class="button">
+			<!--<router-link to="/profile" class="button">
 				<span class="material-icons">person</span>
 				<span class="text">Profile</span>
 			</router-link>
 			<router-link to="/settings" class="button">
 				<span class="material-icons">settings</span>
 				<span class="text">Settings</span>
-			</router-link>
+			</router-link>-->
 			<div class="button" style="cursor: pointer;" v-on:click="signOut">
 				<span class="material-icons">logout</span>
 				<span class="text" style="user-select: none;">Logout</span>
